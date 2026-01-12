@@ -8,8 +8,89 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-player/1.4.3/lottie-player.js"></script>
 
     <title>Lottie Test</title>
+    <style>
+        .wrap{
+          width: min(800px, 100%);
+          margin: 24px auto;
+        }
+        canvas{
+          width: 50%;
+          height: auto;
+          display: block;
+        }
+      </style>
+
 </head>
 <body>
+    <canvas id="c"></canvas>
+
+    <script>
+      const total = 5;
+      const fps = 24;
+      const holdMs = 3000; // 停在最後一張 3 秒
+      const src = (i) => `images/frame${String(i).padStart(2,'0')}.webp`;
+    
+      const c = document.getElementById('c');
+      const ctx = c.getContext('2d');
+    
+      // preload
+      const frames = Array.from({length: total}, (_,k) => {
+        const img = new Image();
+        img.src = src(k + 1);
+        return img;
+      });
+    
+      Promise.all(frames.map(img =>
+        img.decode ? img.decode().catch(()=>{}) : new Promise(r => img.onload = r)
+      )).then(() => {
+        c.width = frames[0].naturalWidth;
+        c.height = frames[0].naturalHeight;
+    
+        let index = 0;
+        let lastTime = 0;
+        let holding = false;
+    
+        function draw() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.drawImage(frames[index], 0, 0);
+        }
+    
+        function loop(t) {
+          const interval = 1000 / fps;
+    
+          if (!holding && t - lastTime >= interval) {
+            lastTime = t;
+    
+            // 畫當前張
+            draw();
+    
+            // 如果已經是最後一張：保持它、停 3 秒、再回到第一張
+            if (index === total - 1) {
+              holding = true;              // 停在最後一張
+              setTimeout(() => {
+                index = 0;                 // 回第一張
+                holding = false;
+                lastTime = performance.now();
+                draw();                    // 立刻畫第一張（避免空白）
+              }, holdMs);
+            } else {
+              index++;                     // 下一張
+            }
+          }
+    
+          requestAnimationFrame(loop);
+        }
+    
+        // 先畫第一張再開始
+        draw();
+        requestAnimationFrame(loop);
+      });
+    </script>
+
+
+
+
+    <h3>加AE效果</h3>
     <lottie-player 
         src="/lottie_test_effect.json"
         style="width: 500px; height: 500px;"
@@ -18,45 +99,53 @@
         autoplay
     ></lottie-player>
 
+    <h3>無效果</h3>
     <lottie-player 
-    src="/lottie_test.json"
-    style="width: 500px; height: 500px;"
-    speed="1"
-    loop
-    autoplay
-></lottie-player>
+        src="/lottie_test.json"
+        style="width: 500px; height: 500px;"
+        speed="1"
+        loop
+        autoplay
+    ></lottie-player>
 
-<lottie-player 
-    src="/PNG.json"
-    style="width: 1920px; height: 1080px;"
-    speed="1"
-    loop
-    autoplay
-></lottie-player>
+    <h3>影片內有PNG 沒轉向量</h3>
+    <lottie-player 
+        src="/PNG.json"
+        style="width: 1920px; height: 1080px;"
+        speed="1"
+        loop
+        autoplay
+    ></lottie-player>
 
-<lottie-player 
-    src="/MLG_向量圖層.json"
-    style="width: 1920px; height: 1080px;"
-    speed="1"
-    loop
-    autoplay
-></lottie-player>
+    <h3>影片內有PNG 有轉向量圖層</h3>
+    <lottie-player 
+        src="/MLG_向量圖層.json"
+        style="width: 1920px; height: 1080px;"
+        speed="1"
+        loop
+        autoplay
+    ></lottie-player>
 
-<video loop muted playsInline>
-    {/*  建議使用 webm */}
-    <source
-      src="/有PNG圖的影片 (1).webm"
-      type="video/webm"
-    />
-</video>
+    <h3>影片內有PNG 轉webm</h3>
+    <video loop muted playsInline>
+        {/*  建議使用 webm */}
+        <source
+        src="/有PNG圖的影片 (1).webm"
+        type="video/webm"
+        />
+    </video>
 
-<video loop muted playsInline>
-    {/*  建議使用 webm */}
-    <source
-      src="有PNG圖的影片_AE直出.webm"
-      type="video/webm"
-    />
-</video>
+    <h3>影片內有PNG 轉webm</h3>
+    <video loop muted playsInline>
+        {/*  建議使用 webm */}
+        <source
+        src="/有PNG圖的影片_AE直出.webm"
+        type="video/webm"
+        />
+    </video>
+
+
+
 
 </body>
 </html
