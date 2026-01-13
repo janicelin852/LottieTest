@@ -22,6 +22,72 @@
 
 </head>
 <body>
+
+    <h3>無效果 → 6KB</h3>
+    <lottie-player 
+        src="/lottie_test.json"
+        style="width: 500px; height: 500px;"
+        speed="1"
+        loop
+        autoplay
+    ></lottie-player>
+
+    <h3>加AE效果 → 15KB</h3>
+    <lottie-player 
+        src="/lottie_test_effect.json"
+        style="width: 500px; height: 500px;"
+        speed="1"
+        loop
+        autoplay
+    ></lottie-player>
+
+
+
+    <h3>影片內有PNG → 75KB + 10MB PNG(看圖片大小)</h3>
+    <lottie-player 
+        src="/MLG_向量圖層.json"
+        style="width: 1920px; height: 1080px;"
+        speed="1"
+        loop
+        autoplay
+    ></lottie-player>
+
+    <h3>影片內有PNG 輸出透明背景 用線上工具 / ffmpeg 轉webm → 失敗 89KB</h3>
+    <video loop muted playsInline>
+        {/*  建議使用 webm */}
+        <source
+        src="/有PNG圖的影片 (1).webm"
+        type="video/webm"
+        />
+    </video>
+
+    <h3>影片內有PNG AE直接輸出webm  → 失敗 91KB</h3>
+    <video loop muted playsInline>
+        {/*  建議使用 webm */}
+        <source
+        src="/有PNG圖的影片_AE直出.webm"
+        type="video/webm"
+        />
+    </video>
+
+
+
+    <h3>WEBM測試</h3>
+    <video loop muted playsInline>
+        {/*  建議使用 webm */}
+        <source
+        src="/123_1.webm"
+        type="video/webm"
+        />
+    </video>
+
+
+
+    <h3>
+        5張PNG魔龍姬 → 1.05MB</br>
+        5張webp魔龍姬 → 170KB
+    </h3>
+
     <canvas id="c"></canvas>
 
     <script>
@@ -90,62 +156,17 @@
 
 
 
-    <h3>加AE效果</h3>
-    <lottie-player 
-        src="/lottie_test_effect.json"
-        style="width: 500px; height: 500px;"
-        speed="1"
-        loop
-        autoplay
-    ></lottie-player>
+    <h1>
+        JSON → 最小，只能有向量圖層</br>
+        .</br>
+        JSON動態 + 純圖PNG → 幾乎要看PNG多大，PNG純圖不能有變化</br>
+        PNG圖有變化，使用WebM → 最小，但 Safari 不支援</br>
+        PNG圖有變化，PNG / WebP Sequence → 最穩定，Safari 也能播</br>
 
-    <h3>無效果</h3>
-    <lottie-player 
-        src="/lottie_test.json"
-        style="width: 500px; height: 500px;"
-        speed="1"
-        loop
-        autoplay
-    ></lottie-player>
+    </h1>
 
-    <h3>影片內有PNG 沒轉向量</h3>
-    <lottie-player 
-        src="/PNG.json"
-        style="width: 1920px; height: 1080px;"
-        speed="1"
-        loop
-        autoplay
-    ></lottie-player>
-
-    <h3>影片內有PNG 有轉向量圖層</h3>
-    <lottie-player 
-        src="/MLG_向量圖層.json"
-        style="width: 1920px; height: 1080px;"
-        speed="1"
-        loop
-        autoplay
-    ></lottie-player>
-
-    <h3>影片內有PNG 轉webm</h3>
-    <video loop muted playsInline>
-        {/*  建議使用 webm */}
-        <source
-        src="/有PNG圖的影片 (1).webm"
-        type="video/webm"
-        />
-    </video>
-
-    <h3>影片內有PNG 轉webm</h3>
-    <video loop muted playsInline>
-        {/*  建議使用 webm */}
-        <source
-        src="/有PNG圖的影片_AE直出.webm"
-        type="video/webm"
-        />
-    </video>
-
-
-
-
+</br>
+</br>
+</br>
 </body>
 </html
