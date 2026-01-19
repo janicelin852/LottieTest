@@ -18,12 +18,15 @@
           height: auto;
           display: block;
         }
+
+        
       </style>
 
 </head>
-<body>
+<body style="background:#d0d0d0;">
 
-    <h3>無效果 → 6KB</h3>
+
+    <h3>無效果 JSON → 6KB</h3>
     <lottie-player 
         src="/lottie_test.json"
         style="width: 500px; height: 500px;"
@@ -32,7 +35,7 @@
         autoplay
     ></lottie-player>
 
-    <h3>加AE效果 → 15KB</h3>
+    <h3>加AE效果 無法呈現 JSON → 15KB</h3>
     <lottie-player 
         src="/lottie_test_effect.json"
         style="width: 500px; height: 500px;"
@@ -43,7 +46,7 @@
 
 
 
-    <h3>影片內有PNG → 75KB + 10MB PNG(看圖片大小)</h3>
+    <!-- <h3>影片內有PNG → 75KB(JSON) + 10MB PNG(看圖片大小)</h3>
     <lottie-player 
         src="/MLG_向量圖層.json"
         style="width: 1920px; height: 1080px;"
@@ -68,27 +71,49 @@
         src="/有PNG圖的影片_AE直出.webm"
         type="video/webm"
         />
+    </video> -->
+
+
+
+    <h3>Kelly PR 輸出WEBM測試透明背景  → 成功 282KB</h3>
+    <video src="/123_1.webm" 
+      autoplay loop muted playsinline>
     </video>
 
 
+    <h3>PR輸出WEBM測試 透明背景  → 成功 140KB</h3>
+    <h3>MP4  → 384KB</h3>
+    <video src="/pr/lottie_test_3.webm"
+      controls muted playsinline>
+    </video>
 
-    <h3>WEBM測試</h3>
-    <video loop muted playsInline>
-        {/*  建議使用 webm */}
-        <source
-        src="/123_1.webm"
-        type="video/webm"
-        />
+    <video src="/pr/lottie_test_3.webm"
+      autoplay loop muted playsinline>
     </video>
 
 
+    <video src="/lottie_test_effect_AE.mp4"
+      autoplay loop muted playsinline>
+    </video>
 
-    <h3>
+
+    <h3> CENTER S 影片測試 WEBM → 成功 1400KB (沒透明不需要用webm) </h3>
+    <h3> CENTER S MP4 → 661KB</h3>
+    <video src="/pr/pen.webm" 
+      autoplay loop muted playsinline>
+    </video>
+
+    <video src="/動畫02_battery_L.mp4" 
+      autoplay loop muted playsinline>
+    </video>
+
+    
+   <h3>
         5張PNG魔龍姬 → 1.05MB</br>
         5張webp魔龍姬 → 170KB
     </h3>
 
-    <canvas id="c"></canvas>
+   <!-- <canvas id="c"></canvas>
 
     <script>
       const total = 5;
@@ -151,19 +176,132 @@
         draw();
         requestAnimationFrame(loop);
       });
-    </script>
+    </script> -->
 
 
 
+    <h3>
+        14張PNG CENTER S → 1.4MB</br>
+        14張webp CENTER S → 170KB
+    </h3>
 
-    <h1>
-        JSON → 最小，只能有向量圖層</br>
-        .</br>
-        JSON動態 + 純圖PNG → 幾乎要看PNG多大，PNG純圖不能有變化</br>
-        PNG圖有變化，使用WebM → 最小，但 Safari 不支援</br>
-        PNG圖有變化，PNG / WebP Sequence → 最穩定，Safari 也能播</br>
 
-    </h1>
+
+<canvas id="c"></canvas>
+<canvas id="c2" style="margin-top:16px;"></canvas>
+
+<script>
+  function playSequence({
+    canvasId,
+    total,
+    fps = 24,
+    holdMs = 0,
+    digits = 2,
+    path = "images",
+    prefix = "frame",
+    ext = "webp",
+    debugBg = false
+  }) {
+    const c = document.getElementById(canvasId);
+    if (!c) throw new Error(`Canvas #${canvasId} not found`);
+    const ctx = c.getContext("2d");
+
+    const src = (i) => `${path}/${prefix}${String(i).padStart(digits, "0")}.${ext}`;
+
+    // 先給尺寸避免空白（可選）
+    if (debugBg) {
+      c.width = 800; c.height = 450;
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, c.width, c.height);
+    }
+
+    function loadImage(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error(`Load failed: ${url}`));
+        img.src = url;
+      });
+    }
+
+    (async () => {
+      const frames = [];
+      for (let i = 1; i <= total; i++) {
+        const url = src(i);
+        const img = await loadImage(url);
+        if (img.decode) await img.decode(); // decode 失敗會直接丟錯（更好抓問題）
+        frames.push(img);
+      }
+
+      const w = frames[0].naturalWidth || frames[0].width;
+      const h = frames[0].naturalHeight || frames[0].height;
+      if (!w || !h) throw new Error(`First frame size is 0: ${src(1)}`);
+
+      c.width = w;
+      c.height = h;
+
+      let index = 0;
+      let lastTime = 0;
+      let holding = false;
+
+      function draw() {
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.drawImage(frames[index], 0, 0);
+      }
+
+      function loop(t) {
+        const interval = 1000 / fps;
+
+        if (!holding && t - lastTime >= interval) {
+          lastTime = t;
+          draw();
+
+          if (index === total - 1 && holdMs > 0) {
+            holding = true;
+            setTimeout(() => {
+              index = 0;
+              holding = false;
+              lastTime = performance.now();
+              draw();
+            }, holdMs);
+          } else {
+            index = (index + 1) % total;
+          }
+        }
+        requestAnimationFrame(loop);
+      }
+
+      draw();
+      requestAnimationFrame(loop);
+    })().catch(console.error);
+  }
+
+  // ✅ 你的第一組（frame01.webp ~ frame05.webp）
+  playSequence({
+    canvasId: "c",
+    total: 5,
+    fps: 24,
+    holdMs: 3000,
+    digits: 2,
+    path: "images",
+    prefix: "frame",
+    ext: "webp"
+  });
+
+
+  // ✅ 你的第二組（frame001.webp ~ frame014.webp）
+  playSequence({
+    canvasId: "c2",
+    total: 14,
+    fps: 24,
+    holdMs: 3000,
+    digits: 3,
+    path: "images_S",
+    prefix: "frame",
+    ext: "webp"
+  });
+</script>
+
 
 </br>
 </br>
