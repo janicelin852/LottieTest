@@ -14,8 +14,6 @@
           margin: 24px auto;
         }
         canvas{
-          width: 50%;
-          height: auto;
           display: block;
         }
 
@@ -156,15 +154,15 @@
 
 
 
-    <h3>
-        14張PNG CENTER S → 1.4MB</br>
-        14張webp CENTER S → 170KB
-    </h3>
+
 
 
 
 <canvas id="c"></canvas>
 <canvas id="c2" style="margin-top:16px;"></canvas>
+<canvas id="c3" style="margin-top:16px;"></canvas>
+<canvas id="c4" style="margin-top:16px;"></canvas>
+
 
 <script>
   function playSequence({
@@ -186,7 +184,7 @@
 
     // 先給尺寸避免空白（可選）
     if (debugBg) {
-      c.width = 800; c.height = 450;
+      c.width = 800; c.height = 650;
       ctx.fillStyle = "#111";
       ctx.fillRect(0, 0, c.width, c.height);
     }
@@ -276,8 +274,43 @@
     prefix: "frame",
     ext: "webp"
   });
+
+
+    // ✅ 你的第三組（frame001.webp ~ frame014.webp）
+    playSequence({
+    canvasId: "c3",
+    total: 14,
+    fps: 24,
+    holdMs: 3000,
+    digits: 3,
+    path: "images_S/100",
+    prefix: "frame",
+    ext: "webp"
+  });
+
+
+    // ✅ 你的第四組（frame001.webp ~ frame014.webp）
+    playSequence({
+    canvasId: "c4",
+    total: 14,
+    fps: 24,
+    holdMs: 3000,
+    digits: 3,
+    path: "images_S/95",
+    prefix: "frame",
+    ext: "webp"
+  });
+
 </script>
 
+
+
+<h3>
+  14張PNG CENTER S → 1.4MB</br>
+  14張webp CENTER S → 170KB 有損</br>
+  14張webp CENTER S → 680KB 無損</br>
+  14張webp CENTER S → 390KB 95%品質</br>
+</h3>
 
 </br>
 </br>
